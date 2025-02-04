@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>青春シャッフルツール</title>
+    <style>
+      .card {
+        width: 100px;
+        height: 150px;
+        border: 1px solid #000;
+        margin: 10px;
+        display: inline-block;
+        text-align: center;
+        cursor: pointer;
+        background-color: #ddd;
+      }
+      .card.flipped {
+        background-color: #fff;
+      }
+      .drawn-cards {
+        margin-top: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>青春シャッフルツール</h1>
+
+    <div>
+      <button onclick="drawCard()">カードを引く</button>
+      <button onclick="resetDeck()">デッキをリセット</button>
+      <button onclick="draw10Cards()">10枚引く</button>
+      <button onclick="draw100Cards()">100枚引く</button>
+    </div>
+
+    <div>
+      <input type="number" id="cardToRemove" placeholder="除外するカード番号" />
+      <button onclick="removeCard()">カードを除外</button>
+    </div>
+
+    <div class="drawn-cards" id="drawnCards"></div>
+
+    <script>
+      let deck = [];
+      let drawnCards = [];
+      const DECK_SIZE = 150;
+
+      function initializeDeck() {
+        deck = Array.from({ length: DECK_SIZE }, (_, i) => i + 1);
+        drawnCards = [];
+        updateDisplay();
+      }
+
+      function drawCard() {
+        if (deck.length === 0) {
+          alert("山札がありません！");
+          return;
+        }
+        const randomIndex = Math.floor(Math.random() * deck.length);
+        const card = deck.splice(randomIndex, 1)[0];
+        drawnCards.push({ number: card, isFlipped: false });
+        updateDisplay();
+      }
+
+      function flipCard(index) {
+        drawnCards[index].isFlipped = !drawnCards[index].isFlipped;
+        updateDisplay();
+      }
+
+      function removeCard() {
+        const cardNumber = parseInt(document.getElementById("cardToRemove").value);
+        const index = deck.indexOf(cardNumber);
+        if (index > -1) {
+          deck.splice(index, 1);
+          alert(`カード番号${cardNumber}を除外しました`);
+        } else {
+          alert("指定されたカードは山札にありません");
+        }
+      }
+
+      function resetDeck() {
+        initializeDeck();
+      }
+
+      function updateDisplay() {
+        const container = document.getElementById("drawnCards");
+        container.innerHTML = drawnCards
+          .map(
+            (card, index) => `
+                <div class="card ${card.isFlipped ? "flipped" : ""}" onclick="flipCard(${index})">
+                    ${card.isFlipped ? card.number : "?"}
+                </div>
+            `
+          )
+          .join("");
+      }
+
+      function draw10Cards() {
+        const cardsToDrawCount = Math.min(10, deck.length);
+        if (deck.length === 0) {
+          alert("山札がありません！");
+          return;
+        }
+
+        for (let i = 0; i < cardsToDrawCount; i++) {
+          const randomIndex = Math.floor(Math.random() * deck.length);
+          const card = deck.splice(randomIndex, 1)[0];
+          drawnCards.push({ number: card, isFlipped: false });
+        }
+        updateDisplay();
+
+        if (cardsToDrawCount < 10) {
+          alert(`残りの${cardsToDrawCount}枚のカードを引きました。`);
+        }
+      }
+
+      function draw100Cards() {
+        const cardsToDrawCount = Math.min(100, deck.length);
+        if (deck.length === 0) {
+          alert("山札がありません！");
+          return;
+        }
+
+        for (let i = 0; i < cardsToDrawCount; i++) {
+          const randomIndex = Math.floor(Math.random() * deck.length);
+          const card = deck.splice(randomIndex, 1)[0];
+          drawnCards.push({ number: card, isFlipped: false });
+        }
+        updateDisplay();
+
+        if (cardsToDrawCount < 100) {
+          alert(`残りの${cardsToDrawCount}枚のカードを引きました。`);
+        }
+      }
+
+      // 初期化
+      initializeDeck();
+    </script>
+  </body>
+</html>
